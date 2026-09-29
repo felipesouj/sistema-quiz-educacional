@@ -117,7 +117,8 @@ classDiagram
     Usuario "1" *-- "0..*" Tentativa : possui
 
     Quiz "0..*" o-- "1..*" Pergunta : contém
-...
+
     Quiz "1" <-- "0..*" Tentativa : realizada em
 
     Pergunta --> NivelDificuldade : dificuldade
+```
