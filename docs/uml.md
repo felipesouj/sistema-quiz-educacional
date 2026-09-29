@@ -46,6 +46,7 @@ tempoTotal	float	Tempo gasto, em minutos.
 taxaAcertos	float	Proporção de respostas corretas.
 concluida	bool	Indica se a tentativa foi finalizada.
 
+```mermaid
 classDiagram
 
     %% =========================
@@ -109,24 +110,14 @@ classDiagram
         DIFICIL
     }
 
-
     %% =========================
     %% RELACIONAMENTOS
     %% =========================
 
-    %% Um usuário pode possuir várias tentativas.
-    %% A tentativa pertence ao histórico daquele usuário.
     Usuario "1" *-- "0..*" Tentativa : possui
 
-    %% Um quiz contém uma ou várias perguntas.
-    %% As perguntas podem ser reutilizadas em outros quizzes.
     Quiz "0..*" o-- "1..*" Pergunta : contém
-
-    %% Uma tentativa corresponde à execução de exatamente um quiz.
-    %% Um mesmo quiz pode ser realizado várias vezes.
+...
     Quiz "1" <-- "0..*" Tentativa : realizada em
 
-    %% Pergunta utiliza o enum para definir sua dificuldade.
     Pergunta --> NivelDificuldade : dificuldade
-    Pergunta --> NivelDificuldade : usa
-```
