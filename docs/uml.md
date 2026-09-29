@@ -46,45 +46,60 @@ tempoTotal	float	Tempo gasto, em minutos.
 taxaAcertos	float	Proporção de respostas corretas.
 concluida	bool	Indica se a tentativa foi finalizada.
 
-```mermaid
 classDiagram
-    %% Classes centrais do domínio
+
+    %% =========================
+    %% CLASSES DO DOMÍNIO
+    %% =========================
+
     class Usuario {
-        +str nome
-        +str email
-        +str matricula_ou_id
-        +list~Tentativa~ tentativas
-        +iniciar_quiz(quiz) Tentativa
+        -str nome
+        -str email
+        -str matricula_ou_id
+        -list~Tentativa~ tentativas
+
+        +iniciar_quiz(quiz: Quiz) Tentativa
+        +consultar_historico() list~Tentativa~
     }
 
     class Quiz {
-        +str titulo
-        +list~Pergunta~ perguntas
-        +int limite_tentativas
-        +int tempo_limite_minutos
+        -str titulo
+        -list~Pergunta~ perguntas
+        -int limite_tentativas
+        -int tempo_limite_minutos
+
+        +adicionar_pergunta(pergunta: Pergunta) void
+        +remover_pergunta(pergunta: Pergunta) void
         +calcular_pontuacao_maxima() int
         +__len__() int
         +__iter__() Iterator
     }
 
     class Pergunta {
-        +str enunciado
-        +list~str~ alternativas
-        +int indice_resposta_correta
-        +str tema
-        +NivelDificuldade dificuldade
+        -str enunciado
+        -list~str~ alternativas
+        -int indice_resposta_correta
+        -str tema
+        -NivelDificuldade dificuldade
+
         +validar_alternativas() bool
-        +validar_resposta_correta() bool
+        +validar_resposta(resposta: int) bool
+        +obter_resposta_correta() int
         +__str__() str
-        +__eq__(outra) bool
+        +__eq__(outra: Pergunta) bool
     }
 
     class Tentativa {
-        +list~int~ respostas
-        +int pontuacao_obtida
-        +float tempo_total
-        +float taxa_acertos
-        +bool concluida
+        -list~int~ respostas
+        -int pontuacao_obtida
+        -float tempo_total
+        -float taxa_acertos
+        -bool concluida
+
+        +registrar_resposta(indice_pergunta: int, resposta: int) void
+        +calcular_pontuacao() int
+        +calcular_taxa_acertos() float
+        +finalizar() void
     }
 
     class NivelDificuldade {
@@ -94,15 +109,24 @@ classDiagram
         DIFICIL
     }
 
-    %% Perguntas podem existir fora de um quiz e ser reutilizadas
-    Quiz "0..*" o-- "1..*" Pergunta : agrega
 
-    %% Cada tentativa faz parte do histórico de um usuário
+    %% =========================
+    %% RELACIONAMENTOS
+    %% =========================
+
+    %% Um usuário pode possuir várias tentativas.
+    %% A tentativa pertence ao histórico daquele usuário.
     Usuario "1" *-- "0..*" Tentativa : possui
 
-    %% Cada tentativa registra a realização de um quiz
-    Tentativa "0..*" --> "1" Quiz : refere-se a
+    %% Um quiz contém uma ou várias perguntas.
+    %% As perguntas podem ser reutilizadas em outros quizzes.
+    Quiz "0..*" o-- "1..*" Pergunta : contém
 
-    %% A dificuldade da pergunta utiliza um valor do enum
+    %% Uma tentativa corresponde à execução de exatamente um quiz.
+    %% Um mesmo quiz pode ser realizado várias vezes.
+    Quiz "1" <-- "0..*" Tentativa : realizada em
+
+    %% Pergunta utiliza o enum para definir sua dificuldade.
+    Pergunta --> NivelDificuldade : dificuldade
     Pergunta --> NivelDificuldade : usa
 ```
