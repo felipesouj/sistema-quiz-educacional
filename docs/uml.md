@@ -1,106 +1,96 @@
-O sistema permite cadastrar perguntas de múltipla escolha, agrupá-las em quizzes e registrar as tentativas de usuários. Os relatórios, a persistência e a interface são requisitos de etapas posteriores e não aparecem como classes nesta primeira modelagem.
-Decisões para validar
-- Cada alternativa é uma String na lista de Pergunta: a especificação exige de 3 a 5 alternativas e um índice correto, mas não define uma entidade Alternativa com identidade ou comportamento próprios.
-- NivelDificuldade representa os três valores previstos: FACIL, MEDIO e DIFICIL.
-- Pergunta é descrita na especificação como classe base, mas nenhuma subclasse é identificada. Não foi inventada uma herança apenas para preencher o diagrama. O requisito geral de herança, inclusive múltipla, deverá ser discutido com o professor quando o modelo concreto for definido.
-- Os tipos e métodos abaixo indicam responsabilidades futuras, não código já entregue.
+# Modelo das classes base
 
-UML textual
-Usuario
-Responsabilidade: identificar quem responde aos quizzes e manter seu histórico de tentativas.
-Atributo	Tipo	Significado
-nome	String	Nome do usuário.
-email	String	E-mail do usuário.
-matriculaOuId	String	Identificador informado no cadastro.
-tentativas	List<Tentativa>	Histórico associado ao usuário.
+O sistema organiza perguntas de múltipla escolha em quizzes e registra tentativas de usuários. Nesta etapa, as classes têm construtores, atributos internos e propriedades de leitura. As propriedades de coleção retornam cópias de listas, preservando a lista interna da classe.
 
+## Decisões do modelo
 
-Método principal: iniciarQuiz(quiz: Quiz) -> Tentativa, sujeito à validação do limite de tentativas em etapa futura.
-Quiz
-Responsabilidade: agrupar perguntas e definir as condições para respondê-las.
-Atributo	Tipo	Significado
-titulo	String	Nome do quiz.
-perguntas	List<Pergunta>	Perguntas utilizadas no quiz.
-limiteTentativas	int	Quantas vezes cada usuário pode tentar responder.
-tempoLimiteMinutos	int?	Tempo máximo opcional; ausente quando não houver limite.
+- As alternativas são textos; não há uma classe `Alternativa` porque elas não têm identidade ou comportamento próprio nesta etapa.
+- `NivelDificuldade` limita a dificuldade aos valores `FACIL`, `MEDIO` e `DIFICIL`.
+- `Pergunta` não tem subclasses, pois o escopo não especifica tipos especializados de pergunta.
+- A pontuação máxima do quiz considera um ponto por pergunta.
+- O fluxo de responder, calcular resultados e finalizar tentativas será desenvolvido em etapas posteriores.
 
+## API das classes
 
-Métodos principais: calcularPontuacaoMaxima() -> int, __len__() -> int e __iter__() -> Iterator.
-Pergunta
-Responsabilidade: representar um enunciado de múltipla escolha, seu tema, dificuldade e gabarito.
-Atributo	Tipo	Significado
-enunciado	String	Texto da pergunta.
-alternativas	List<String>	Entre três e cinco opções de resposta.
-indiceRespostaCorreta	int	Posição válida na lista de alternativas.
-tema	String	Assunto ao qual pertence a pergunta.
-dificuldade	NivelDificuldade	Um dos níveis previstos.
+### Usuario
 
+Propriedades somente para leitura: `nome`, `email`, `matricula_ou_id` e `tentativas`. O construtor recebe nome, e-mail e matrícula ou ID. `iniciar_quiz(quiz)` cria uma tentativa associada ao usuário e ao quiz; `consultar_historico()` retorna uma lista com as tentativas.
 
-Métodos principais: validarAlternativas() -> bool, validarRespostaCorreta() -> bool, __str__() -> String e __eq__(outra: Pergunta) -> bool. A comparação por igualdade considera enunciado e tema, conforme a especificação.
-Tentativa
-Responsabilidade: registrar uma execução de determinado quiz por determinado usuário.
-Atributo	Tipo	Significado
-respostas	List<int>	Índices das alternativas escolhidas, na ordem das perguntas.
-pontuacaoObtida	int	Pontuação alcançada.
-tempoTotal	float	Tempo gasto, em minutos.
-taxaAcertos	float	Proporção de respostas corretas.
-concluida	bool	Indica se a tentativa foi finalizada.
+### Quiz
+
+Propriedades somente para leitura: `titulo`, `perguntas`, `limite_tentativas` e `tempo_limite_minutos`. O tempo limite é opcional. Os métodos `adicionar_pergunta()` e `remover_pergunta()` gerenciam as perguntas; `calcular_pontuacao_maxima()`, `__len__()` e `__iter__()` consultam o quiz.
+
+### Pergunta
+
+Propriedades somente para leitura: `enunciado`, `alternativas`, `indice_resposta_correta`, `tema` e `dificuldade`. O construtor exige de três a cinco alternativas textuais e um índice correto válido. `validar_alternativas()` e `validar_resposta_correta()` verificam essas condições. A igualdade entre perguntas considera enunciado e tema.
+
+### Tentativa
+
+O construtor associa a tentativa a um `Usuario` e a um `Quiz`. As propriedades de leitura são `usuario`, `quiz`, `respostas`, `pontuacao_obtida`, `tempo_total`, `taxa_acertos` e `concluida`. Uma tentativa nova começa sem respostas, com resultados zerados e ainda não concluída.
+
+## Diagrama
 
 ```mermaid
 classDiagram
-
-    %% =========================
-    %% CLASSES DO DOMÍNIO
-    %% =========================
-
     class Usuario {
-        -str nome
-        -str email
-        -str matricula_ou_id
-        -list~Tentativa~ tentativas
-
-        +iniciar_quiz(quiz: Quiz) Tentativa
+        -str _nome
+        -str _email
+        -str _matricula_ou_id
+        -list~Tentativa~ _tentativas
+        +str nome
+        +str email
+        +str matricula_ou_id
+        +list~Tentativa~ tentativas
+        +iniciar_quiz(quiz) Tentativa
         +consultar_historico() list~Tentativa~
     }
 
     class Quiz {
-        -str titulo
-        -list~Pergunta~ perguntas
-        -int limite_tentativas
-        -int tempo_limite_minutos
-
-        +adicionar_pergunta(pergunta: Pergunta) void
-        +remover_pergunta(pergunta: Pergunta) void
+        -str _titulo
+        -list~Pergunta~ _perguntas
+        -int _limite_tentativas
+        -int? _tempo_limite_minutos
+        +str titulo
+        +list~Pergunta~ perguntas
+        +int limite_tentativas
+        +int? tempo_limite_minutos
+        +adicionar_pergunta(pergunta) void
+        +remover_pergunta(pergunta) void
         +calcular_pontuacao_maxima() int
         +__len__() int
-        +__iter__() Iterator
+        +__iter__() Iterator~Pergunta~
     }
 
     class Pergunta {
-        -str enunciado
-        -list~str~ alternativas
-        -int indice_resposta_correta
-        -str tema
-        -NivelDificuldade dificuldade
-
+        -str _enunciado
+        -list~str~ _alternativas
+        -int _indice_resposta_correta
+        -str _tema
+        -NivelDificuldade _dificuldade
+        +str enunciado
+        +list~str~ alternativas
+        +int indice_resposta_correta
+        +str tema
+        +NivelDificuldade dificuldade
         +validar_alternativas() bool
-        +validar_resposta(resposta: int) bool
-        +obter_resposta_correta() int
+        +validar_resposta_correta() bool
         +__str__() str
-        +__eq__(outra: Pergunta) bool
+        +__eq__(outra) bool
     }
 
     class Tentativa {
-        -list~int~ respostas
-        -int pontuacao_obtida
-        -float tempo_total
-        -float taxa_acertos
-        -bool concluida
-
-        +registrar_resposta(indice_pergunta: int, resposta: int) void
-        +calcular_pontuacao() int
-        +calcular_taxa_acertos() float
-        +finalizar() void
+        -list~int~ _respostas
+        -int _pontuacao_obtida
+        -float _tempo_total
+        -float _taxa_acertos
+        -bool _concluida
+        +Usuario usuario
+        +Quiz quiz
+        +list~int~ respostas
+        +int pontuacao_obtida
+        +float tempo_total
+        +float taxa_acertos
+        +bool concluida
     }
 
     class NivelDificuldade {
@@ -110,15 +100,8 @@ classDiagram
         DIFICIL
     }
 
-    %% =========================
-    %% RELACIONAMENTOS
-    %% =========================
-
-    Usuario "1" *-- "0..*" Tentativa : possui
-
-    Quiz "0..*" o-- "1..*" Pergunta : contém
-
-    Quiz "1" <-- "0..*" Tentativa : realizada em
-
-    Pergunta --> NivelDificuldade : dificuldade
+    Quiz "0..*" o-- "0..*" Pergunta : reúne
+    Usuario "1" *-- "0..*" Tentativa : mantém histórico
+    Tentativa "0..*" --> "1" Quiz : referencia
+    Pergunta --> NivelDificuldade : usa
 ```

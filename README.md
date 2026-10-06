@@ -4,11 +4,11 @@ Programação Orientada a Objetos — Sistema de Quiz Educacional.
 
 ## Descrição
 
-O projeto modela um sistema no qual perguntas de múltipla escolha são organizadas em quizzes. Usuários poderão responder aos quizzes, registrar tentativas e acompanhar o próprio desempenho. Nesta primeira entrega, o repositório apresenta a modelagem e a estrutura inicial do código; as funcionalidades ainda não estão implementadas.
+O projeto modela um sistema no qual perguntas de múltipla escolha são organizadas em quizzes. Nesta etapa, as classes base já possuem construtores, propriedades de leitura e validações essenciais. O fluxo completo de respostas, relatórios, persistência e interface será desenvolvido em etapas posteriores.
 
 ## Objetivo
 
-Planejar uma solução orientada a objetos para cadastrar perguntas, reunir perguntas em quizzes e representar as tentativas dos usuários. A modelagem deverá servir de base para as validações, pontuação e relatórios previstos nas etapas seguintes.
+Implementar uma solução orientada a objetos para representar perguntas, quizzes, usuários e tentativas, mantendo os dados encapsulados e servindo de base para as próximas etapas.
 
 ## Funcionalidades
 
@@ -22,9 +22,9 @@ Planejar uma solução orientada a objetos para cadastrar perguntas, reunir perg
 
 - Apresentar gabarito e relatórios de desempenho em etapas futuras.
 
-Aqui eu separo a pessoa que responde (Usuario), o conjunto de perguntas (Quiz), cada item de múltipla escolha (Pergunta) e o registro de uma execução (Tentativa). O enum NivelDificuldade restringe a dificuldade de uma pergunta a fácil, médio ou difícil.7
+Aqui eu separo a pessoa que responde (Usuario), o conjunto de perguntas (Quiz), cada item de múltipla escolha (Pergunta) e o registro de uma execução (Tentativa). O enum NivelDificuldade restringe a dificuldade de uma pergunta a fácil, médio ou difícil. Os atributos são internos; as propriedades expõem os dados sem permitir alterar diretamente coleções internas.
 
-As alternativas são textos na lista de Pergunta, pois a especificação não exige uma classe própria para elas. A especificação chama Pergunta de classe base, mas não define subclasses: nenhuma herança concreta foi adicionada ao diagrama nesta etapa. Os métodos abaixo representam responsabilidades planejadas, sem lógica implementada.
+As alternativas são textos na lista de Pergunta, pois a especificação não exige uma classe própria para elas. A especificação chama Pergunta de classe base, mas não define subclasses: nenhuma herança concreta foi adicionada ao diagrama nesta etapa.
 
 ## Classes
 
@@ -40,7 +40,8 @@ Atributos:
 - `tentativas`
 
 Métodos principais:
-- `iniciarQuiz()`
+- `iniciar_quiz(quiz)`
+- `consultar_historico()`
 
 
 # Quiz
@@ -55,7 +56,9 @@ Atributos:
 - `tempoLimiteMinutos`
 
 Métodos principais:
-- `calcularPontuacaoMaxima()`
+- `adicionar_pergunta(pergunta)`
+- `remover_pergunta(pergunta)`
+- `calcular_pontuacao_maxima()`
 - `__len__()`
 - `__iter__()`
 
@@ -73,8 +76,8 @@ Atributos:
 - `dificuldade`
 
 Métodos principais:
-- `validarAlternativas()`
-- `validarRespostaCorreta()`
+- `validar_alternativas()`
+- `validar_resposta_correta()`
 - `__str__()`
 - `__eq__()`
 
@@ -92,7 +95,7 @@ Atributos:
 - `concluida`
 
 Métodos principais:
-- Os métodos relacionados à execução da tentativa serão definidos nas próximas etapas do projeto.
+- O construtor associa a tentativa ao usuário e ao quiz e inicia seus resultados em zero. O registro de respostas será implementado em uma etapa posterior.
 
 ---
 
