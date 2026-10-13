@@ -1,200 +1,47 @@
-Sistema de Quiz Educacional
+# Sistema de Quiz Educacional
 
-Programação Orientada a Objetos — Sistema de Quiz Educacional.
-
-## Descrição
-
-O projeto modela um sistema no qual perguntas de múltipla escolha são organizadas em quizzes. Nesta etapa, as classes base já possuem construtores, propriedades de leitura e validações essenciais. O fluxo completo de respostas, relatórios, persistência e interface será desenvolvido em etapas posteriores.
-
-## Objetivo
-
-Implementar uma solução orientada a objetos para representar perguntas, quizzes, usuários e tentativas, mantendo os dados encapsulados e servindo de base para as próximas etapas.
+Projeto simples de programação orientada a objetos para criar quizzes, registrar tentativas e consultar resultados.
 
 ## Funcionalidades
 
-- Cadastrar perguntas com enunciado, tema, dificuldade e três a cinco alternativas.
+- `Usuario` herda de `Pessoa` e reaproveita a validação e as propriedades de nome e e-mail.
+- `Quiz` reúne objetos `Pergunta`; `Usuario` mantém suas `Tentativa`; cada tentativa referencia o usuário e o quiz.
+- A tentativa registra uma alternativa por pergunta, calcula pontuação e percentual ao finalizar.
+- `persistencia.py` salva e carrega quizzes, usuários e tentativas em JSON.
+- `relatorios.py` gera um resumo textual das tentativas por usuário.
 
-- Montar quizzes com perguntas de um ou mais temas.
+## Como executar
 
-- Permitir que usuários respondam a quizzes dentro dos limites configurados.
+Com Python 3.10 ou superior, execute na pasta do projeto:
 
-- Registrar respostas, pontuação, tempo gasto e taxa de acertos por tentativa.
-
-- Apresentar gabarito e relatórios de desempenho em etapas futuras.
-
-Aqui eu separo a pessoa que responde (Usuario), o conjunto de perguntas (Quiz), cada item de múltipla escolha (Pergunta) e o registro de uma execução (Tentativa). O enum NivelDificuldade restringe a dificuldade de uma pergunta a fácil, médio ou difícil. Os atributos são internos; as propriedades expõem os dados sem permitir alterar diretamente coleções internas.
-
-As alternativas são textos na lista de Pergunta, pois a especificação não exige uma classe própria para elas. A especificação chama Pergunta de classe base, mas não define subclasses: nenhuma herança concreta foi adicionada ao diagrama nesta etapa.
-
-## Classes
-
-# Usuario
-
-Responsabilidade:  
-Identificar quem responde aos quizzes e manter o histórico de suas tentativas.
-
-Atributos:
-- `nome`
-- `email`
-- `matriculaOuId`
-- `tentativas`
-
-Métodos principais:
-- `iniciar_quiz(quiz)`
-- `consultar_historico()`
-
-
-# Quiz
-
-Responsabilidade: 
-Reunir as perguntas do quiz e definir os limites e regras de execução.
-
-Atributos:
-- `titulo`
-- `perguntas`
-- `limiteTentativas`
-- `tempoLimiteMinutos`
-
-Métodos principais:
-- `adicionar_pergunta(pergunta)`
-- `remover_pergunta(pergunta)`
-- `calcular_pontuacao_maxima()`
-- `__len__()`
-- `__iter__()`
-
-
-# Pergunta
-
-Responsabilidade:  
-Representar uma pergunta do quiz, incluindo seu enunciado, alternativas, tema, dificuldade e resposta correta.
-
-Atributos:
-- `enunciado`
-- `alternativas`
-- `indiceRespostaCorreta`
-- `tema`
-- `dificuldade`
-
-Métodos principais:
-- `validar_alternativas()`
-- `validar_resposta_correta()`
-- `__str__()`
-- `__eq__()`
-
-
-# Tentativa
-
-Responsabilidade: 
-Registrar os dados e o resultado de uma execução do quiz realizada por um usuário.
-
-Atributos:
-- `respostas`
-- `pontuacaoObtida`
-- `tempoTotal`
-- `taxaAcertos`
-- `concluida`
-
-Métodos principais:
-- O construtor associa a tentativa ao usuário e ao quiz e inicia seus resultados em zero. O registro de respostas será implementado em uma etapa posterior.
-
----
-
-# NivelDificuldade
-
-Tipo: `Enum`
-
-Responsabilidade: 
-Restringir e padronizar os níveis de dificuldade disponíveis para as perguntas.
-
-Valores:
-- `FACIL`
-- `MEDIO`
-- `DIFICIL`
-
-
-
-A descrição detalhada de atributos, tipos e decisões está em [uml.md](docs/uml.md).
-Relacionamentos
-Ligação	Tipo	Cardinalidade	Justificativa
-Quiz → Pergunta	Agregação	Cada quiz contém 1..* perguntas; cada pergunta pode integrar 0..* quizzes.	Uma pergunta pode existir sem o quiz e ser reutilizada.
-Usuario → Tentativa	Composição no domínio	Cada usuário possui 0..* tentativas; cada tentativa pertence a 1 usuário.	A tentativa compõe o histórico do usuário.
-Tentativa → Quiz	Associação	Cada tentativa se refere a 1 quiz; cada quiz pode ter 0..* tentativas.	É necessário saber qual quiz foi respondido.
-Pergunta → NivelDificuldade	Uso de enum	Cada pergunta tem 1 nível.	Somente os três valores previstos são admitidos.
-
-## Organização
-
-sistema-quiz-educacional/
-├── .gitignore                  
-├── README.md                   
-├── main.py                     
-├── docs/
-│   └── uml.md                  
-└── models/
-    ├── __init__.py
-    ├── nivel_dificuldade.py
-    ├── pergunta.py
-    ├── quiz.py
-    ├── tentativa.py
-    └── usuario.py
-
-
-# Diagrama UML
-
-```mermaid
-classDiagram
-    %% Classes centrais do domínio
-    class Usuario {
-        +str nome
-        +str email
-        +str matricula_ou_id
-        +list~Tentativa~ tentativas
-        +iniciar_quiz(quiz) Tentativa
-    }
-
-    class Quiz {
-        +str titulo
-        +list~Pergunta~ perguntas
-        +int limite_tentativas
-        +int tempo_limite_minutos
-        +calcular_pontuacao_maxima() int
-        +__len__() int
-        +__iter__() Iterator
-    }
-
-    class Pergunta {
-        +str enunciado
-        +list~str~ alternativas
-        +int indice_resposta_correta
-        +str tema
-        +NivelDificuldade dificuldade
-        +validar_alternativas() bool
-        +validar_resposta_correta() bool
-        +__str__() str
-        +__eq__(outra) bool
-    }
-
-    class Tentativa {
-        +list~int~ respostas
-        +int pontuacao_obtida
-        +float tempo_total
-        +float taxa_acertos
-        +bool concluida
-    }
-
-    class NivelDificuldade {
-        <<enumeration>>
-        FACIL
-        MEDIO
-        DIFICIL
-    }
-
-    %% Relacionamentos e cardinalidades
-    Quiz "0..*" o-- "1..*" Pergunta : agrega
-    Usuario "1" *-- "0..*" Tentativa : possui
-    Tentativa "0..*" --> "1" Quiz : refere-se a
-    Pergunta --> NivelDificuldade : usa
+```bash
+python main.py
 ```
 
-Autor
+O exemplo cria um quiz, registra respostas, salva os dados em `dados.json`, carrega o arquivo e imprime o relatório.
 
-José Felipe dos Santos Souza — Engenharia de Software
+## Uso básico
+
+```python
+from models import NivelDificuldade, Pergunta, Quiz, Usuario
+from persistencia import carregar_dados, salvar_dados
+from relatorios import gerar_relatorio
+
+pergunta = Pergunta(
+    "Quanto é 2 + 2?", ["3", "4", "5"], 1, "Matemática", NivelDificuldade.FACIL
+)
+quiz = Quiz("Matemática", [pergunta])
+usuario = Usuario("Ana", "ana@example.com", "A001")
+
+tentativa = usuario.iniciar_quiz(quiz)
+tentativa.registrar_resposta(1)  # Índices das alternativas começam em zero.
+tentativa.finalizar(tempo_total=12)
+
+salvar_dados([usuario], [quiz])
+usuarios, quizzes = carregar_dados()
+print(gerar_relatorio(usuarios))
+```
+
+Consulte [docs/uml.md](docs/uml.md) para as classes e seus relacionamentos.
+
+Autor: José Felipe dos Santos Souza — Engenharia de Software.

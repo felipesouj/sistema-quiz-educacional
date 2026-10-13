@@ -31,6 +31,44 @@ class Tentativa:
         self._taxa_acertos = 0.0
         self._concluida = False
 
+    def registrar_resposta(self, indice_alternativa: int) -> None:
+        """Registra a alternativa escolhida para a próxima pergunta."""
+        if self._concluida:
+            raise ValueError("A tentativa já foi concluída.")
+        if len(self._respostas) >= len(self._quiz):
+            raise ValueError("Todas as perguntas já foram respondidas.")
+
+        pergunta = self._quiz.perguntas[len(self._respostas)]
+        if (
+            not isinstance(indice_alternativa, int)
+            or isinstance(indice_alternativa, bool)
+            or not 0 <= indice_alternativa < len(pergunta.alternativas)
+        ):
+            raise ValueError("A alternativa informada não existe.")
+        self._respostas.append(indice_alternativa)
+
+    def finalizar(self, tempo_total: float = 0.0) -> None:
+        """Calcula o resultado e encerra a tentativa."""
+        if self._concluida:
+            raise ValueError("A tentativa já foi concluída.")
+        if len(self._respostas) != len(self._quiz):
+            raise ValueError("Responda a todas as perguntas antes de finalizar.")
+        if (
+            not isinstance(tempo_total, (int, float))
+            or isinstance(tempo_total, bool)
+            or tempo_total < 0
+        ):
+            raise ValueError("O tempo total deve ser um número não negativo.")
+
+        acertos = sum(
+            resposta == pergunta.indice_resposta_correta
+            for resposta, pergunta in zip(self._respostas, self._quiz)
+        )
+        self._pontuacao_obtida = acertos
+        self._tempo_total = float(tempo_total)
+        self._taxa_acertos = acertos / len(self._quiz) * 100
+        self._concluida = True
+
     @property
     def usuario(self) -> Usuario:
         return self._usuario
