@@ -109,25 +109,4 @@ O menu permite listar e cadastrar quizzes, cadastrar e listar usuários, respond
 4. Escolha `5` para consultar o relatório e `7` para salvar e sair.
 5. Execute `python main.py` novamente para recuperar os dados salvos.
 
-## Testes
-
-Execute a suíte automatizada da biblioteca padrão:
-
-```bash
-python -m unittest discover -s tests -v
-```
-
-Os testes cobrem validações, encapsulamento, herança, abstração e polimorfismo; início e conclusão de tentativas; correção e cálculo de pontuação; quizzes temáticos; compatibilidade de leitura dos dados antigos; preservação de referências compartilhadas; persistência; e fluxos de CLI, incluindo arquivo JSON inválido.
-
-## Situação das quatro etapas
-
-| Etapa | Entrega consolidada | Situação |
-| --- | --- | --- |
-| 1 — Modelagem OO | UML textual e Mermaid, classes, atributos, métodos, relações, objetivo e estrutura no README. | Atendida |
-| 2 — Implementação e encapsulamento | Classes-base, validações, propriedades de leitura, cópias de coleções e responsabilidades separadas. | Atendida |
-| 3 — Herança, relações e persistência | `Usuario(Pessoa)`, hierarquia de perguntas, quizzes temáticos, relações de domínio, JSON e relatório. | Atendida |
-| 4 — Regras e integração | Regras centralizadas, CLI, migração de dados anteriores e testes automatizados. | Atendida; tempo limite permanece informativo por falta de política definida |
-
-O diagnóstico das versões e a lista dos arquivos consolidados estão em [docs/diagnostico.md](docs/diagnostico.md). O diagrama completo está em [docs/uml.md](docs/uml.md).
-
 Autor: José Felipe dos Santos Souza — Engenharia de Software.
