@@ -20,8 +20,7 @@ Demonstrar modelagem de domínio, encapsulamento, abstração, herança, polimor
 ## Tecnologias
 
 - Python 3.10 ou superior.
-- Biblioteca padrão do Python (`json`, `pathlib`, `abc`, `enum`, `unittest`, entre outras).
-- Persistência local em JSON; não há dependências externas nem etapa de build.
+- Persistência local em JSON.
 
 ## Estrutura
 
