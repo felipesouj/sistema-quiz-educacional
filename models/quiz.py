@@ -14,6 +14,7 @@ class Quiz:
     _perguntas: list[Pergunta]
     _limite_tentativas: int
     _tempo_limite_minutos: int | None
+    _tentativas_iniciadas: bool
 
     def __init__(
         self,
@@ -41,6 +42,7 @@ class Quiz:
         self._perguntas = list(perguntas) if perguntas is not None else []
         self._limite_tentativas = limite_tentativas
         self._tempo_limite_minutos = tempo_limite_minutos
+        self._tentativas_iniciadas = False
 
         if any(not isinstance(pergunta, Pergunta) for pergunta in self._perguntas):
             raise TypeError("O quiz aceita apenas objetos Pergunta.")
@@ -63,12 +65,22 @@ class Quiz:
         return self._tempo_limite_minutos
 
     def adicionar_pergunta(self, pergunta: Pergunta) -> None:
+        self._validar_editavel()
         if not isinstance(pergunta, Pergunta):
             raise TypeError("O quiz aceita apenas objetos Pergunta.")
         self._perguntas.append(pergunta)
 
     def remover_pergunta(self, pergunta: Pergunta) -> None:
+        self._validar_editavel()
         self._perguntas.remove(pergunta)
+
+    def _marcar_tentativa_iniciada(self) -> None:
+        """Mantém estável o conjunto de perguntas após a primeira tentativa."""
+        self._tentativas_iniciadas = True
+
+    def _validar_editavel(self) -> None:
+        if self._tentativas_iniciadas:
+            raise ValueError("Não é possível alterar as perguntas após iniciar uma tentativa.")
 
     def calcular_pontuacao_maxima(self) -> int:
         """Considera um ponto possível por pergunta."""

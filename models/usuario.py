@@ -5,9 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from .pessoa import Pessoa
+from .quiz import Quiz
 
 if TYPE_CHECKING:
-    from .quiz import Quiz
     from .tentativa import Tentativa
 
 
@@ -52,3 +52,6 @@ class Usuario(Pessoa):
 
     def consultar_historico(self) -> list[Tentativa]:
         return self._tentativas.copy()
+
+    def __str__(self) -> str:
+        return f"{self.nome} ({self._matricula_ou_id})"

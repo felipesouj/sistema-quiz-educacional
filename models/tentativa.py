@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from math import isfinite
+
 from .quiz import Quiz
 from .usuario import Usuario
 
@@ -22,9 +24,12 @@ class Tentativa:
             raise TypeError("A tentativa deve pertencer a um Usuario.")
         if not isinstance(quiz, Quiz):
             raise TypeError("A tentativa deve se referir a um Quiz.")
+        if not quiz.perguntas:
+            raise ValueError("Não é possível iniciar uma tentativa em um quiz sem perguntas.")
 
         self._usuario = usuario
         self._quiz = quiz
+        quiz._marcar_tentativa_iniciada()
         self._respostas: list[int] = []
         self._pontuacao_obtida = 0
         self._tempo_total = 0.0
@@ -42,7 +47,7 @@ class Tentativa:
         if (
             not isinstance(indice_alternativa, int)
             or isinstance(indice_alternativa, bool)
-            or not 0 <= indice_alternativa < len(pergunta.alternativas)
+            or not 0 <= indice_alternativa < pergunta.numero_opcoes
         ):
             raise ValueError("A alternativa informada não existe.")
         self._respostas.append(indice_alternativa)
@@ -53,19 +58,21 @@ class Tentativa:
             raise ValueError("A tentativa já foi concluída.")
         if len(self._respostas) != len(self._quiz):
             raise ValueError("Responda a todas as perguntas antes de finalizar.")
-        if (
-            not isinstance(tempo_total, (int, float))
-            or isinstance(tempo_total, bool)
-            or tempo_total < 0
-        ):
-            raise ValueError("O tempo total deve ser um número não negativo.")
+        if not isinstance(tempo_total, (int, float)) or isinstance(tempo_total, bool):
+            raise ValueError("O tempo total deve ser um número finito não negativo.")
+        try:
+            duracao = float(tempo_total)
+        except OverflowError as erro:
+            raise ValueError("O tempo total deve ser um número finito não negativo.") from erro
+        if not isfinite(duracao) or duracao < 0:
+            raise ValueError("O tempo total deve ser um número finito não negativo.")
 
         acertos = sum(
-            resposta == pergunta.indice_resposta_correta
+            pergunta.corrigir(resposta)
             for resposta, pergunta in zip(self._respostas, self._quiz)
         )
         self._pontuacao_obtida = acertos
-        self._tempo_total = float(tempo_total)
+        self._tempo_total = duracao
         self._taxa_acertos = acertos / len(self._quiz) * 100
         self._concluida = True
 
