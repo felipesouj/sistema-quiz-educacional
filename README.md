@@ -37,12 +37,7 @@ Demonstrar modelagem de domínio, encapsulamento, abstração, herança, polimor
 │   ├── quiz_tematico.py     # quiz que valida o tema das perguntas
 │   ├── tentativa.py         # respostas, correção e resultado
 │   └── nivel_dificuldade.py # enum de dificuldade
-├── tests/                   # testes automatizados com unittest
 └── docs/
-    ├── diagnostico.md       # auditoria e comparação das fontes
-    ├── checklist-entregas.md
-    ├── requisitos.md        # regras e premissas
-    ├── matriz-rastreabilidade.md
     └── uml.md                # UML textual e Mermaid
 ```
 
